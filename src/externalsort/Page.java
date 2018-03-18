@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 class PageFullException extends Exception {
-    public PageFullException(String message) {
+    PageFullException(String message) {
         super(message);
     }
 }
@@ -21,7 +21,7 @@ public class Page {
 
     private ArrayList<Integer> data;
 
-    public Page(byte[] rawPage, int length) {
+    Page(byte[] rawPage, int length) {
         IntBuffer intBuf = ByteBuffer.wrap(rawPage).asIntBuffer();
         data = new ArrayList<>();
         int lengthRemaining = length;
@@ -32,7 +32,7 @@ public class Page {
         }
     }
 
-    public Page() {
+    Page() {
         this.data = new ArrayList<>();
     }
 

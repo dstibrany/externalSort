@@ -10,7 +10,7 @@ public class BufferPool {
     private Page[] pool;
     private int outputBufferIndex;
 
-    public BufferPool(int size) {
+    BufferPool(int size) {
         this.size = size;
         pool = new Page[size];
         outputBufferIndex = size - 1;

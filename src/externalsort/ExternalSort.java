@@ -115,7 +115,6 @@ public class ExternalSort {
             RunIterator currentMinIterator = null;
             int currentMin = Integer.MAX_VALUE;
             for (RunIterator iterator: runIterators) {
-                int x = iterator.current();
                 if (iterator.current() < currentMin) {
                     currentMin = iterator.current();
                     currentMinIterator = iterator;

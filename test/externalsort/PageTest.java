@@ -64,7 +64,6 @@ class PageTest {
     @Test
     void serializeTest() throws IOException {
         byte[] serializedPage = page.serialize();
-        assertEquals(Page.PAGE_SIZE, serializedPage.length);
 
         Page pageFromSerializedData = new Page(serializedPage, testData.length * Page.FIELD_SIZE);
 

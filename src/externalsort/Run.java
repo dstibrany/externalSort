@@ -17,10 +17,6 @@ public class Run {
         this.file.deleteOnExit();
     }
 
-    public File getFile() {
-        return file;
-    }
-
     public void addField(Integer field) throws IOException {
         ExternalSort.getBufferPool().addToOutputBuffer(this.file, field);
     }
@@ -44,7 +40,7 @@ class RunIterator implements Iterator<Integer> {
     private int numPages;
     private int bufferIndex;
 
-    public RunIterator(File file, int bufferIndex) {
+    RunIterator(File file, int bufferIndex) {
         this.file = file;
         this.bufferIndex = bufferIndex;
         this.currentPageNumber = 0;
