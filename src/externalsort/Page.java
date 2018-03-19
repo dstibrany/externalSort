@@ -17,7 +17,7 @@ class PageFullException extends Exception {
 
 public class Page {
     public static final int FIELD_SIZE = Integer.BYTES;
-    public static final int PAGE_SIZE = 128;
+    public static int PAGE_SIZE = 4096;
 
     private ArrayList<Integer> data;
 

@@ -3,8 +3,25 @@ package externalsort;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Command;
+import picocli.CommandLine;
 
+@Command(name = "externalSort")
 public class ExternalSort {
+    @Option(names = { "-n", "--numBuffers" }, paramLabel = "numBuffers", description = "The number of buffers in the buffer pool")
+    private int numBuffers = 3;
+
+    @Option(names = { "-p", "--pageSize" }, paramLabel = "pageSize", description = "The page size in bytes")
+    private int pageSize = Page.PAGE_SIZE;
+
+    @Parameters(index = "0", paramLabel = "FILE", description = "The file to sort")
+    private String inputFilename = "";
+
+    @Option(names = {"--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     private static ExternalSort _instance = new ExternalSort();
     public static BufferPool getBufferPool() {
         return _instance.bufferPool;
@@ -12,47 +29,23 @@ public class ExternalSort {
     private BufferPool bufferPool;
 
     public static void main(String args[]) throws IOException {
-        if (args.length > 0 && args[0].equals("convert")) {
-            convert(new File(args[1]));
+        CommandLine commandLine = new CommandLine(_instance);
+        commandLine.parse(args);
+
+        if (_instance.usageHelpRequested) {
+            commandLine.usage(System.out);
+            return;
         }
-        else if (args.length > 0 && args[0].equals("read")) {
-            read(new File(args[1]));
-        }
-        else if (args.length > 0 && args[0].equals("sort")) {
-            _instance.sort(new File(args[1]));
-        }
-        else {
-            System.out.println("No command specified");
-            System.exit(1);
-        }
+
+        Page.PAGE_SIZE = _instance.pageSize;
+
+        _instance.sort();
     }
 
-    private static void convert(File file) throws IOException {
-        File outFile = new File(file.getPath().replace("txt", "dat"));
-        DataOutputStream dos = new DataOutputStream(new FileOutputStream(outFile));
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line;
-
-        while ((line = br.readLine()) != null) {
-            dos.writeInt(Integer.parseInt(line));
-        }
-
-        dos.close();
-    }
-
-    private static void read(File file) throws IOException {
-        DataInputStream dis = new DataInputStream(new FileInputStream(file));
-
-        while (dis.available() > 0) {
-            System.out.println(dis.readInt());
-        }
-
-        dis.close();
-    }
-
-    private void sort(File file) throws IOException {
-        bufferPool = new BufferPool(4);
-        List<Run> runList = splitIntoRuns(file);
+    private void sort() throws IOException {
+        bufferPool = new BufferPool(numBuffers);
+        File binaryFile = convertToBinary(new File(this.inputFilename));
+        List<Run> runList = splitIntoRuns(binaryFile);
 
         while (runList.size() > 1) {
             runList = doAMergeIteration(runList);
@@ -66,6 +59,20 @@ public class ExternalSort {
         }
     }
 
+    private File convertToBinary(File file) throws IOException {
+        File binaryOutFile = bufferPool.createTempFile();
+        DataOutputStream dos = new DataOutputStream(new FileOutputStream(binaryOutFile));
+        BufferedReader br = new BufferedReader(new FileReader(file), Page.PAGE_SIZE);
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            dos.writeInt(Integer.parseInt(line));
+        }
+
+        dos.close();
+
+        return binaryOutFile;
+    }
     private List<Run> splitIntoRuns(File file) throws IOException {
         List<Run> runList = new ArrayList<>();
         int outputBufferIndex = bufferPool.getOutputBufferIndex();
