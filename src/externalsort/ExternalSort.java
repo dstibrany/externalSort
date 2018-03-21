@@ -44,7 +44,9 @@ public class ExternalSort {
 
     private void sort() throws IOException {
         bufferPool = new BufferPool(numBuffers);
+
         File binaryFile = convertToBinary(new File(this.inputFilename));
+
         List<Run> runList = splitIntoRuns(binaryFile);
 
         while (runList.size() > 1) {

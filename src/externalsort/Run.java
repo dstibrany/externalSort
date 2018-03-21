@@ -81,13 +81,11 @@ class RunIterator implements Iterator<Integer> {
     private Integer readNextField() {
         if (this.pageIterator.hasNext()) {
             return this.pageIterator.next();
-
         } else if (++this.currentPageNumber < this.numPages)  {
             Page page = this.readNextPage();
             this.pageIterator = page.iterator();
             return this.pageIterator.next();
-        }
-        else {
+        } else {
             return null;
         }
     }
