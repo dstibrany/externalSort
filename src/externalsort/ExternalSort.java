@@ -54,10 +54,10 @@ public class ExternalSort {
         }
 
         Run finalSortedRun = runList.get(0);
-        RunIterator i = finalSortedRun.iterator(0);
-        i.open();
-        while (i.hasNext()) {
-            System.out.println(i.next());
+        RunIterator finalRun = finalSortedRun.iterator(0); // pick an arbitrary buffer to use
+        finalRun.open();
+        while (finalRun.hasNext()) {
+            System.out.println(finalRun.next());
         }
     }
 
@@ -75,6 +75,7 @@ public class ExternalSort {
 
         return binaryOutFile;
     }
+
     private List<Run> splitIntoRuns(File file) throws IOException {
         List<Run> runList = new ArrayList<>();
         int outputBufferIndex = bufferPool.getOutputBufferIndex();
@@ -99,8 +100,8 @@ public class ExternalSort {
             int toIndex = Math.min(k, runList.size());
             List<Run> runsToMerge = new ArrayList<>(runList.subList(0, toIndex));
             runList.subList(0, toIndex).clear();
-            Run mergedRun = mergeRuns(runsToMerge);
 
+            Run mergedRun = mergeRuns(runsToMerge);
             mergedRunList.add(mergedRun);
         }
 
