@@ -1,6 +1,6 @@
 # External Sort
 
-This program implements an external merge sort algorithm. The use case for this is when we have a file larger than the amount of memory available for sorting.
+This program implements an external merge sort algorithm, which is used to sort data that is larger than the amount of memory available for sorting.
 
 The algorithm works as follows, given a buffer pool size of B pages and a page size of P in bytes:
 
